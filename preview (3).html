@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>校園 AI 問答助手研究報告</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;
+      background:#f4f7fb;
+      color:#1f2937;
+      line-height:1.8;
+    }
+    header{
+      background:linear-gradient(135deg,#1e3a8a,#2563eb,#38bdf8);
+      color:white;
+      padding:80px 20px;
+      text-align:center;
+    }
+    header h1{font-size:44px;margin-bottom:12px}
+    header p{font-size:20px;opacity:.95}
+    nav{
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:white;
+      box-shadow:0 2px 10px rgba(0,0,0,.08);
+      padding:12px 20px;
+      text-align:center;
+    }
+    nav a{
+      display:inline-block;
+      margin:6px 10px;
+      color:#1e40af;
+      text-decoration:none;
+      font-weight:700;
+    }
+    nav a:hover{text-decoration:underline}
+    main{max-width:1180px;margin:auto;padding:30px 18px 60px}
+    section{
+      background:white;
+      margin:26px 0;
+      padding:32px;
+      border-radius:18px;
+      box-shadow:0 8px 24px rgba(15,23,42,.08);
+    }
+    h2{
+      color:#1e3a8a;
+      font-size:30px;
+      margin-bottom:20px;
+      border-left:8px solid #2563eb;
+      padding-left:14px;
+    }
+    h3{color:#2563eb;font-size:23px;margin:22px 0 12px}
+    h4{color:#111827;font-size:18px;margin:16px 0 8px}
+    p{margin:8px 0}
+    ul,ol{padding-left:25px;margin:8px 0 14px}
+    li{margin:5px 0}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:18px;
+    }
+    .card{
+      background:#f8fafc;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:20px;
+    }
+    .card h3{margin-top:0}
+    .tag{
+      display:inline-block;
+      background:#dbeafe;
+      color:#1e40af;
+      padding:3px 10px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:700;
+      margin:3px 4px 3px 0;
+    }
+    .table-wrap{overflow-x:auto;margin-top:14px}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:white;
+      min-width:760px;
+    }
+    th{
+      background:#2563eb;
+      color:white;
+      white-space:nowrap;
+    }
+    th,td{
+      border:1px solid #d1d5db;
+      padding:12px;
+      vertical-align:top;
+      text-align:left;
+    }
+    tr:nth-child(even) td{background:#f8fafc}
+    .priority-p0{color:#dc2626;font-weight:800}
+    .priority-p1{color:#d97706;font-weight:800}
+    .priority-p2{color:#059669;font-weight:800}
+    .story{
+      background:#f9fafb;
+      border-left:5px solid #60a5fa;
+      padding:18px;
+      border-radius:12px;
+      margin:18px 0;
+    }
+    .story-title{
+      font-weight:800;
+      color:#1e3a8a;
+      font-size:20px;
+      margin-bottom:8px;
+    }
+    .quote{
+      background:#eff6ff;
+      border-radius:12px;
+      padding:14px 18px;
+      margin:10px 0;
+      font-style:italic;
+    }
+    footer{
+      background:#111827;
+      color:white;
+      text-align:center;
+      padding:28px 18px;
+    }
+    @media(max-width:640px){
+      header h1{font-size:32px}
+      header{padding:55px 16px}
+      section{padding:22px}
+      h2{font-size:25px}
+      nav a{font-size:14px;margin:4px 6px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>校園 AI 問答助手研究報告</h1>
+    <p>Persona｜使用者旅程圖｜MVP 功能優先級｜Product Backlog</p>
+  </header>
+
+  <nav>
+    <a href="#persona">Persona</a>
+    <a href="#journey">使用者旅程圖</a>
+    <a href="#mvp">MVP 功能清單</a>
+    <a href="#backlog">Product Backlog</a>
+    <a href="#dod">DoD</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>專案介紹</h2>
+      <p>
+        本專案主題為「校園 AI 問答助手」，目標是透過 AI 問答、FAQ 知識庫、截止日提醒與錯答回報等功能，
+        協助學生快速取得正確的校務資訊，同時降低行政人員處理重複問題的負擔。
+      </p>
+    </section>
+
+    <section id="persona">
+      <h2>Persona（校園 AI 問答助手）</h2>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Persona 1：新生導向型學生</h3>
+          <span class="tag">資訊探索者</span>
+          <h4>1. 基本資料</h4>
+          <ul>
+            <li>姓名：張同學（虛構）</li>
+            <li>年齡：18 歲</li>
+            <li>身分：大一新生</li>
+            <li>數位能力：中高（主要使用手機 App）</li>
+          </ul>
+          <h4>2. 可能使用 AI 助手 APP 情境</h4>
+          <ul>
+            <li>開學前查詢註冊、選課、宿舍與校園地圖</li>
+            <li>第一次辦理請假、借教室、申請在學證明時提問</li>
+            <li>想快速理解校務公告重點與流程</li>
+          </ul>
+          <h4>3. 會使用 AI 助手 APP 動機</h4>
+          <ul>
+            <li>快速取得正確且可執行的答案</li>
+            <li>降低詢問學長姐與跑行政單位的成本</li>
+            <li>希望 24 小時都有即時回覆</li>
+          </ul>
+          <h4>4. 使用者痛點</h4>
+          <ul>
+            <li>校務資訊分散在官網、系網、社群</li>
+            <li>不確定規定是否為最新版本</li>
+            <li>行政術語多、流程理解困難</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Persona 2：課業壓力型在校生</h3>
+          <span class="tag">高頻效率使用者</span>
+          <h4>1. 基本資料</h4>
+          <ul>
+            <li>姓名：林同學（虛構）</li>
+            <li>年齡：21 歲</li>
+            <li>身分：大三學生</li>
+            <li>數位能力：高（高度依賴數位工具）</li>
+          </ul>
+          <h4>2. 可能使用 AI 助手 APP 情境</h4>
+          <ul>
+            <li>考前查詢課程規範、繳件期限、教室異動</li>
+            <li>生成複習清單、讀書計畫與重點摘要</li>
+            <li>查詢獎學金、實習、畢業門檻相關規則</li>
+          </ul>
+          <h4>3. 會使用 AI 助手 APP 動機</h4>
+          <ul>
+            <li>節省搜尋與比對公告時間</li>
+            <li>取得結構化資訊以快速行動</li>
+            <li>避免錯過期限造成學業損失</li>
+          </ul>
+          <h4>4. 使用者痛點</h4>
+          <ul>
+            <li>公告內容冗長且更新頻繁</li>
+            <li>常需跨平台反覆確認資訊</li>
+            <li>回答不夠精準時會影響決策品質</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Persona 3：校務行政人員</h3>
+          <span class="tag">服務提供與治理者</span>
+          <h4>1. 基本資料</h4>
+          <ul>
+            <li>姓名：王小姐（虛構）</li>
+            <li>年齡：35 歲</li>
+            <li>身分：教務/學務行政窗口</li>
+            <li>數位能力：中（重視正確性與合規）</li>
+          </ul>
+          <h4>2. 可能使用 AI 助手 APP 情境</h4>
+          <ul>
+            <li>建立 FAQ 知識庫，統一回覆口徑</li>
+            <li>在選課季、註冊季分流大量重複問題</li>
+            <li>查看熱門問題與服務瓶頸，調整公告內容</li>
+          </ul>
+          <h4>3. 會使用 AI 助手 APP 動機</h4>
+          <ul>
+            <li>降低電話與櫃台重複詢問負擔</li>
+            <li>提升回覆效率與一致性</li>
+            <li>以資料數據支持流程優化</li>
+          </ul>
+          <h4>4. 使用者痛點</h4>
+          <ul>
+            <li>重複性問答量大，人工處理耗時</li>
+            <li>擔心 AI 錯答造成申訴與信任風險</li>
+            <li>知識更新與版本維護成本高</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Persona 摘要（供產品設計對照）</h3>
+      <ul>
+        <li><strong>新生（上手效率）</strong>：需要「新手引導、流程化回答、關鍵連結」</li>
+        <li><strong>在校生（決策效率）</strong>：需要「精準查詢、截止提醒、任務化建議」</li>
+        <li><strong>行政人員（服務治理）</strong>：需要「知識庫管理、回覆一致性、問題分析儀表板」</li>
+      </ul>
+    </section>
+
+    <section id="journey">
+      <h2>使用者旅程圖</h2>
+      <p>Persona 定義：1. 新生導向型學生（資訊探索者） 2. 課業壓力型在校生（高頻效率使用者） 3. 校務行政人員（服務提供與治理者）</p>
+
+      <h3>Persona 1：新生導向型學生（資訊探索者）</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>階段</th><th>使用者行為</th><th>接觸點</th><th>情緒</th><th>痛點</th><th>產品機會點</th></tr>
+          <tr><td>觸發</td><td>收到入學通知，需完成多項流程</td><td>新生手冊、學校網站、社群</td><td>😰 焦慮</td><td>資訊分散、術語難懂</td><td>「新生模式」一鍵導覽</td></tr>
+          <tr><td>搜尋</td><td>查註冊、選課、宿舍、地圖</td><td>App 搜尋、FAQ</td><td>😕 不確定</td><td>不知道問法、找不到關鍵字</td><td>自然語言提問 + 熱門問題建議</td></tr>
+          <tr><td>理解</td><td>閱讀 AI 回答與流程步驟</td><td>回答卡片、連結導頁</td><td>🙂 稍安心</td><td>擔心內容過期</td><td>顯示「最後更新時間」與來源</td></tr>
+          <tr><td>行動</td><td>依指示辦理請假/借教室/申請證明</td><td>校務系統、表單</td><td>😐 緊張</td><td>跳轉多系統易迷路</td><td>流程拆步 + 進度提示</td></tr>
+          <tr><td>驗證</td><td>確認是否完成申請</td><td>通知、待辦清單</td><td>🙂 放心</td><td>無狀態追蹤</td><td>任務狀態追蹤、到期提醒</td></tr>
+        </table>
+      </div>
+
+      <h3>Persona 2：課業壓力型在校生（高頻效率使用者）</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>階段</th><th>使用者行為</th><th>接觸點</th><th>情緒</th><th>痛點</th><th>產品機會點</th></tr>
+          <tr><td>觸發</td><td>考前/繳件前需要快速確認規範</td><td>課程平台、群組訊息</td><td>😫 壓力高</td><td>時間緊、資訊量大</td><td>首頁顯示「近期截止事項」</td></tr>
+          <tr><td>搜尋</td><td>查截止日、教室異動、畢業門檻</td><td>App 搜尋、篩選</td><td>😠 急躁</td><td>公告分散且版本不一</td><td>聚合查詢 + 條件篩選</td></tr>
+          <tr><td>比對</td><td>比較不同公告與規定</td><td>回答來源、歷史版本</td><td>😕 懷疑</td><td>不確定哪個才是最新</td><td>版本標記 + 衝突提示</td></tr>
+          <tr><td>決策</td><td>產生讀書/辦理計畫並執行</td><td>任務清單、提醒</td><td>🙂 可控</td><td>缺少可執行建議</td><td>回答轉任務（To-do）</td></tr>
+          <tr><td>回饋</td><td>對回答正確性評分</td><td>回饋按鈕</td><td>😐 中性</td><td>錯答修正慢</td><td>一鍵回報錯誤、快速修正流程</td></tr>
+        </table>
+      </div>
+
+      <h3>Persona 3：校務行政人員（服務提供與治理者）</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>階段</th><th>使用者行為</th><th>接觸點</th><th>情緒</th><th>痛點</th><th>產品機會點</th></tr>
+          <tr><td>觸發</td><td>選課季/註冊季詢問量暴增</td><td>電話、櫃台、Email</td><td>😵 負荷高</td><td>重複問題過多</td><td>AI 分流常見問答</td></tr>
+          <tr><td>建置</td><td>維護 FAQ 與回覆模板</td><td>後台知識庫</td><td>😐 謹慎</td><td>更新流程繁瑣</td><td>批次更新、版本控管</td></tr>
+          <tr><td>監控</td><td>追蹤熱門問題與錯答</td><td>儀表板、報表</td><td>😟 擔憂</td><td>難即時掌握服務品質</td><td>熱點問題排行、錯答告警</td></tr>
+          <tr><td>優化</td><td>調整公告與流程</td><td>公告系統、內部會議</td><td>🙂 積極</td><td>缺乏量化依據</td><td>問題分類統計、趨勢分析</td></tr>
+          <tr><td>治理</td><td>控管風險與合規</td><td>權限、審核紀錄</td><td>😐 嚴謹</td><td>怕錯答引發申訴</td><td>審核流程、回覆留痕、權限分級</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="mvp">
+      <h2>功能優先級（MVP）清單</h2>
+      <p>依據 Persona：新生、在校生、行政人員</p>
+      <p>優先級定義：<strong>P0 必做</strong> / <strong>P1 應做</strong> / <strong>P2 可做</strong></p>
+
+      <h3>P0（必做）</h3>
+
+      <div class="story">
+        <div class="story-title">1) 校務問答（RAG + 來源引用）</div>
+        <p><strong>功能目標：</strong>提供可追溯、可驗證的校務問答</p>
+        <p><strong>對應痛點：</strong>資訊分散、版本不明、回答信任不足</p>
+        <h4>核心需求</h4>
+        <ul><li>自然語言提問</li><li>回答附來源連結與更新時間</li><li>無答案時提供轉人工/相關單位</li></ul>
+        <h4>驗收標準（Acceptance Criteria）</h4>
+        <ul><li>提問後 3 秒內回應（P95）</li><li>80% 回答含至少 1 個有效來源</li><li>無答案情境皆有替代建議</li></ul>
+        <h4>KPI</h4>
+        <ul><li>首次提問解決率（FTR）≥ 60%</li><li>平均找答案時間（TTA）下降 30%</li></ul>
+      </div>
+
+      <div class="story">
+        <div class="story-title">2) 知識庫後台（FAQ/公告匯入與版本管理）</div>
+        <p><strong>功能目標：</strong>讓行政端可快速更新與治理內容</p>
+        <p><strong>對應痛點：</strong>更新成本高、口徑不一致</p>
+        <h4>核心需求</h4>
+        <ul><li>FAQ 新增/編輯/下架</li><li>版本號與生效時間</li><li>權限分級（管理員/編輯者）</li></ul>
+        <h4>驗收標準</h4>
+        <ul><li>後台可在 5 分鐘內完成一則 FAQ 更新並發布</li><li>每次更新保留版本紀錄與操作人</li></ul>
+        <h4>KPI</h4>
+        <ul><li>錯誤資訊修正時間（MTTR）≤ 1 工作天</li></ul>
+      </div>
+
+      <div class="story">
+        <div class="story-title">3) 截止日與重要事項提醒</div>
+        <p><strong>功能目標：</strong>降低學生錯過期限</p>
+        <p><strong>對應痛點：</strong>公告冗長、期限易漏看</p>
+        <h4>核心需求</h4>
+        <ul><li>問答中可辨識截止資訊</li><li>設定提醒（App 內/Email）</li><li>個人待辦清單</li></ul>
+        <h4>驗收標準</h4>
+        <ul><li>使用者可一鍵把回答轉為提醒</li><li>提醒可編輯時間與頻率</li></ul>
+        <h4>KPI</h4>
+        <ul><li>期限類問題重複詢問率下降 20%</li></ul>
+      </div>
+
+      <div class="story">
+        <div class="story-title">4) 回答回饋與錯答回報</div>
+        <p><strong>功能目標：</strong>建立持續優化閉環</p>
+        <p><strong>對應痛點：</strong>錯答修正慢</p>
+        <h4>核心需求</h4>
+        <ul><li>有幫助/沒幫助評分</li><li>錯誤回報（分類 + 補充）</li><li>管理端回報佇列</li></ul>
+        <h4>驗收標準</h4>
+        <ul><li>每則回答皆可回饋</li><li>回報可追蹤狀態（已受理/修正中/已完成）</li></ul>
+        <h4>KPI</h4>
+        <ul><li>錯答回報處理 SLA：48 小時內</li></ul>
+      </div>
+
+      <h3>P1（應做）</h3>
+      <div class="grid">
+        <div class="card"><h3>5) 個人化首頁（身分/年級/系所）</h3><p><strong>功能目標：</strong>提升資訊命中率</p><p><strong>對應痛點：</strong>跨平台反覆查詢</p><ul><li>可依身分顯示不同快捷入口與熱門問題</li><li>首頁導流到有效答案率 ≥ 50%</li></ul></div>
+        <div class="card"><h3>6) 回答轉任務（To-do）</h3><p><strong>功能目標：</strong>讓資訊可直接執行</p><p><strong>對應痛點：</strong>知道規則但無法落地行動</p><ul><li>回答可拆解為步驟清單並勾選完成</li><li>任務建立後 7 日完成率 ≥ 40%</li></ul></div>
+        <div class="card"><h3>7) 行政儀表板（熱門問題/時段/單位）</h3><p><strong>功能目標：</strong>支援公告與流程優化</p><p><strong>對應痛點：</strong>難掌握服務瓶頸</p><ul><li>可查看 Top 問題、趨勢、錯答熱點</li><li>重複性問題量月降 15%</li></ul></div>
+      </div>
+
+      <h3>P2（可做）</h3>
+      <div class="grid">
+        <div class="card"><h3>8) 多輪情境引導</h3><p><strong>功能目標：</strong>降低複雜流程理解成本</p><p><strong>驗收標準：</strong>提供分步引導與進度保存</p></div>
+        <div class="card"><h3>9) 跨系統進度整合</h3><p><strong>功能目標：</strong>減少來回查詢</p><p><strong>驗收標準：</strong>可在同一頁查看主要流程狀態</p></div>
+        <div class="card"><h3>10) 高峰期智能分流策略</h3><p><strong>功能目標：</strong>在選課季維持服務品質</p><p><strong>驗收標準：</strong>問題可自動分流至模板/人工窗口</p></div>
+      </div>
+
+      <h3>建議 Sprint 切分（6 週）</h3>
+      <ul>
+        <li><strong>Sprint 1（第 1–2 週）：</strong>P0-1 問答核心、P0-2 知識庫基礎</li>
+        <li><strong>Sprint 2（第 3–4 週）：</strong>P0-3 提醒、P0-4 回饋閉環</li>
+        <li><strong>Sprint 3（第 5–6 週）：</strong>P1-5 個人化、P1-7 儀表板基礎</li>
+      </ul>
+
+      <h3>上線門檻（Go/No-Go）</h3>
+      <ul>
+        <li>P0 功能完整可用且通過 UAT</li>
+        <li>主要查詢情境（註冊/選課/請假）可被正確回覆</li>
+        <li>錯答回報流程可在 SLA 內關單</li>
+        <li>監控指標可於後台即時查看</li>
+      </ul>
+    </section>
+
+    <section id="backlog">
+      <h2>產品待辦清單（Product Backlog）－校園 AI 問答助手</h2>
+
+      <h3>一、Backlog 總覽</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>ID</th><th>優先級</th><th>主題（Epic）</th><th>標題</th><th>估點（SP）</th><th>建議 Sprint</th></tr>
+          <tr><td>PB-001</td><td class="priority-p0">P0</td><td>問答核心</td><td>校務自然語言問答（含來源引用）</td><td>13</td><td>Sprint 1</td></tr>
+          <tr><td>PB-002</td><td class="priority-p0">P0</td><td>知識治理</td><td>FAQ/公告知識庫後台（CRUD + 版本）</td><td>8</td><td>Sprint 1</td></tr>
+          <tr><td>PB-003</td><td class="priority-p0">P0</td><td>提醒任務</td><td>截止日提醒與待辦建立</td><td>8</td><td>Sprint 2</td></tr>
+          <tr><td>PB-004</td><td class="priority-p0">P0</td><td>品質閉環</td><td>回答評分與錯答回報流程</td><td>5</td><td>Sprint 2</td></tr>
+          <tr><td>PB-005</td><td class="priority-p1">P1</td><td>個人化</td><td>依身分顯示首頁快捷與熱門問題</td><td>5</td><td>Sprint 3</td></tr>
+          <tr><td>PB-006</td><td class="priority-p1">P1</td><td>行動化</td><td>回答轉任務清單（To-do）</td><td>5</td><td>Sprint 3</td></tr>
+          <tr><td>PB-007</td><td class="priority-p1">P1</td><td>分析治理</td><td>行政儀表板（熱門問題/錯答熱點）</td><td>8</td><td>Sprint 3</td></tr>
+          <tr><td>PB-008</td><td class="priority-p2">P2</td><td>對話體驗</td><td>多輪情境引導（新生報到/畢業檢核）</td><td>8</td><td>後續</td></tr>
+          <tr><td>PB-009</td><td class="priority-p2">P2</td><td>系統整合</td><td>跨系統進度整合（選課/申請）</td><td>13</td><td>後續</td></tr>
+          <tr><td>PB-010</td><td class="priority-p2">P2</td><td>高峰分流</td><td>旺季智能分流（模板/人工）</td><td>8</td><td>後續</td></tr>
+        </table>
+      </div>
+
+      <h3>二、詳細項目（User Story + 驗收條件）</h3>
+
+      <div class="story">
+        <div class="story-title">PB-001｜校務自然語言問答（含來源引用）【P0】</div>
+        <h4>User Story</h4>
+        <div class="quote">As a 在校學生,<br>I want 使用自然語言詢問校務問題並看到來源,<br>so that 我能快速取得可信答案並立即行動。</div>
+        <h4>Acceptance Criteria</h4>
+        <ol>
+          <li>使用者輸入問題後，系統在 3 秒內回覆（P95）。</li>
+          <li>回答需顯示至少 1 個來源（網址或文件）與更新時間。</li>
+          <li>若無法回答，需提供替代建議（相關單位、關鍵字、人工窗口）。</li>
+          <li>可記錄提問、回答、點擊來源事件供後續分析。</li>
+        </ol>
+      </div>
+
+      <div class="story">
+        <div class="story-title">PB-002｜FAQ/公告知識庫後台（CRUD + 版本）【P0】</div>
+        <h4>User Story</h4>
+        <div class="quote">As an 行政人員,<br>I want 維護 FAQ 與公告版本,<br>so that 問答內容可持續正確且一致。</div>
+        <h4>Acceptance Criteria</h4>
+        <ol>
+          <li>後台支援 FAQ 新增、編輯、下架、搜尋。</li>
+          <li>每次更新需保留版本、更新時間、操作人。</li>
+          <li>權限至少分為管理員/編輯者，未授權者不可發布。</li>
+          <li>單筆 FAQ 更新到可查詢狀態不超過 5 分鐘。</li>
+        </ol>
+      </div>
+
+      <div class="story">
+        <div class="story-title">PB-003｜截止日提醒與待辦建立【P0】</div>
+        <h4>User Story</h4>
+        <div class="quote">As a 忙碌學生,<br>I want 把問答中的期限一鍵設為提醒,<br>so that 我不會錯過重要時程。</div>
+        <h4>Acceptance Criteria</h4>
+        <ol>
+          <li>回答中含日期/截止資訊時，可一鍵建立提醒。</li>
+          <li>提醒可設定時間、頻率、通知方式（App 或 Email）。</li>
+          <li>已建立提醒可在「我的待辦」查看、編輯、刪除。</li>
+          <li>到期前依設定發送通知，失敗需有重試與紀錄。</li>
+        </ol>
+      </div>
+
+      <div class="story">
+        <div class="story-title">PB-004｜回答評分與錯答回報流程【P0】</div>
+        <h4>User Story</h4>
+        <div class="quote">As a 使用者,<br>I want 對回答評分並回報錯誤,<br>so that 系統能更快修正並提高準確率。</div>
+        <h4>Acceptance Criteria</h4>
+        <ol>
+          <li>每則回答提供「有幫助/沒幫助」評分。</li>
+          <li>「沒幫助」可填寫錯誤類型與補充說明。</li>
+          <li>管理端可查看回報清單與處理狀態（已受理/修正中/已完成）。</li>
+          <li>回報案件需可追蹤處理時間與結果備註。</li>
+        </ol>
+      </div>
+
+      <div class="story">
+        <div class="story-title">PB-005｜個人化首頁（身分/年級/系所）【P1】</div>
+        <h4>User Story</h4>
+        <div class="quote">As a 學生,<br>I want 看到符合我身分的快捷入口,<br>so that 我能更快找到需要資訊。</div>
+        <h4>Acceptance Criteria</h4>
+        <ol>
+          <li>首次登入可設定身分、年級、系所。</li>
+          <li>首頁依設定顯示對應熱門問題與快捷功能。</li>
+          <li>使用者可隨時修改個人化偏好。</li>
+          <li>未設定時提供通用首頁與引導設定。</li>
+        </ol>
+      </div>
+
+      <div class="story">
+        <div class="story-title">PB-006｜回答轉任務清單（To-do）【P1】</div>
+        <h4>User Story</h4>
+        <div class="quote">As a 使用者,<br>I want 將回答步驟轉為可勾選任務,<br>so that 我可以按步驟完成流程。</div>
+        <h4>Acceptance Criteria</h4>
+        <ol>
+          <li>回答可一鍵轉為任務清單（含預設步驟）。</li>
+          <li>任務支援勾選完成、調整順序、加註備註。</li>
+          <li>任務可關聯提醒時間與到期日。</li>
+          <li>任務完成率可被統計（個人層級）。</li>
+        </ol>
+      </div>
+
+      <div class="story">
+        <div class="story-title">PB-007｜行政儀表板（熱門問題/錯答熱點）【P1】</div>
+        <h4>User Story</h4>
+        <div class="quote">As an 行政管理者,<br>I want 查看熱門問題與錯答熱點,<br>so that 我能優先優化公告與流程。</div>
+        <h4>Acceptance Criteria</h4>
+        <ol>
+          <li>儀表板顯示 Top 問題、趨勢、時段分布。</li>
+          <li>可查看錯答回報量與類型分布。</li>
+          <li>支援依單位/期間篩選並匯出 CSV。</li>
+          <li>數據每日自動更新，異常時顯示告警。</li>
+        </ol>
+      </div>
+
+      <div class="story">
+        <div class="story-title">PB-008｜多輪情境引導（新生報到/畢業檢核）【P2】</div>
+        <h4>User Story</h4>
+        <div class="quote">As a 新生或畢業生,<br>I want 被引導完成多步驟流程,<br>so that 我不會漏掉必要事項。</div>
+        <h4>Acceptance Criteria</h4>
+        <ol>
+          <li>提供情境流程模板（新生報到、畢業檢核）。</li>
+          <li>每步驟含條件、說明、連結與完成標記。</li>
+          <li>可中斷後續接續，保留進度。</li>
+        </ol>
+      </div>
+
+      <div class="story">
+        <div class="story-title">PB-009｜跨系統進度整合（選課/申請）【P2】</div>
+        <h4>User Story</h4>
+        <div class="quote">As a 使用者,<br>I want 在同一介面看申請進度,<br>so that 我不需來回切換多系統。</div>
+        <h4>Acceptance Criteria</h4>
+        <ol>
+          <li>可顯示主要流程狀態（已送出/審核中/完成/退件）。</li>
+          <li>異常狀態需提供下一步建議與窗口。</li>
+          <li>整合失敗時提供明確錯誤訊息與重試機制。</li>
+        </ol>
+      </div>
+
+      <div class="story">
+        <div class="story-title">PB-010｜旺季智能分流（模板/人工）【P2】</div>
+        <h4>User Story</h4>
+        <div class="quote">As an 行政人員,<br>I want 在高峰期自動分流問題,<br>so that 服務品質可維持穩定。</div>
+        <h4>Acceptance Criteria</h4>
+        <ol>
+          <li>可設定旺季期間與分流規則。</li>
+          <li>高重複問題先走模板回覆，複雜問題轉人工。</li>
+          <li>需有分流命中率與人工接手率報表。</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="dod">
+      <h2>MVP 上線範圍與 Definition of Done</h2>
+
+      <h3>三、MVP 上線範圍（建議）</h3>
+      <ul>
+        <li>必含：PB-001 ~ PB-004（P0 全部）</li>
+        <li>可加值：PB-005 或 PB-007（二選一）</li>
+        <li>延期：PB-008 ~ PB-010（P2）</li>
+      </ul>
+
+      <h3>四、Definition of Done（DoD）</h3>
+      <ol>
+        <li>通過功能測試與 UAT。</li>
+        <li>有基本操作紀錄與錯誤日誌。</li>
+        <li>關鍵指標可被追蹤（FTR、TTA、錯答處理時效）。</li>
+        <li>文件完成：使用說明、管理手冊、變更紀錄。</li>
+      </ol>
+
+      <h3>小建議（讓 Word 更好看）</h3>
+      <ul>
+        <li>標題套用「標題 1 / 標題 2 / 標題 3」</li>
+        <li>表格套用「淺色樣式」</li>
+        <li>行距設為 1.3～1.5</li>
+        <li>User Story 可改成斜體提升可讀性</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Hungkuang University｜智慧科技應用系</p>
+    <p>校園 AI 問答助手研究專題</p>
+  </footer>
+</body>
+</html>
